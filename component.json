@@ -1,0 +1,21 @@
+{
+  "name": "fan",
+  "repo": "familyfound/fan",
+  "description": "An svg fan component",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {},
+  "development": {
+    "notablemind/manager": "*"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js",
+    "node.js",
+    "utils.js"
+  ],
+  "styles": [
+    "fan.css"
+  ]
+}

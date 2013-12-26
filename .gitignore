@@ -1,0 +1,6 @@
+*.swp
+components
+build
+test/example/index.css
+test/example/index.js
+test/example/react.js
