@@ -3,6 +3,7 @@ var d = React.DOM
   , utils = require('./utils')
 
 var Node = module.exports = React.createClass({
+  displayName: 'FanNode',
   getDefaultProps: function () {
     return {
       id: null,
