@@ -9,6 +9,7 @@ var Node = module.exports = React.createClass({
       id: null,
       manager: null,
       transform: undefined,
+      attr: null,
       gen: 0,
       pos: 0,
       options: {
@@ -28,8 +29,12 @@ var Node = module.exports = React.createClass({
     if (!this.props.manager) return
     this.props.manager.on(this.props.id, this.gotData)
   },
+  componentWillUnMount: function () {
+    if (!this.props.manager) return
+    this.props.manager.off(this.props.id, this.gotData)
+  },
   gotData: function (data) {
-    this.setState({data: data})
+    this.setState({data: this.props.attr ? (data[this.props.attr] || {}) : data})
   },
   render: function () {
     var data = this.state.data
@@ -40,6 +45,7 @@ var Node = module.exports = React.createClass({
         id: data.father,
         ref: 'father',
         className: 'father',
+        attr: this.props.attr,
         manager: this.props.manager,
         gen: this.props.gen + 1,
         pos: this.props.pos * 2
@@ -51,6 +57,7 @@ var Node = module.exports = React.createClass({
         id: data.mother,
         ref: 'mother',
         className: 'mother',
+        attr: this.props.attr,
         manager: this.props.manager,
         gen: this.props.gen + 1,
         pos: this.props.pos * 2 + 1
