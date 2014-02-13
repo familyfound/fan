@@ -4,7 +4,9 @@
   "description": "An svg fan component",
   "version": "0.0.1",
   "keywords": [],
-  "dependencies": {},
+  "dependencies": {
+    "component/tip": "*"
+  },
   "development": {
     "notablemind/manager": "*"
   },
@@ -17,5 +19,6 @@
   ],
   "styles": [
     "fan.css"
-  ]
+  ],
+  "remotes": []
 }
