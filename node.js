@@ -55,7 +55,7 @@ function positionTip(x, y, tip) {
   tip.show(x, y)
   var ew = tip.el.clientWidth
     , eh = tip.el.clientHeight
-    , dir = 'right' || tip.suggested('right', {left: x, top: y})
+    , dir = tip.suggested('right', {left: x, top: y}) || 'right'
     , xy = tipPosition(x, y, ew, eh, dir)
   tip.position(dir)
   tip.show(xy.left, xy.top)
@@ -69,6 +69,7 @@ var Node = module.exports = React.createClass({
       manager: null,
       transform: undefined,
       getClasses: function () {},
+      onClick: function () {},
       tip: false,
       attr: null,
       gen: 0,
@@ -91,7 +92,8 @@ var Node = module.exports = React.createClass({
     if (!this.props.manager) return
     this.props.manager.on(this.props.id, this.gotData)
   },
-  componentWillUnMount: function () {
+  componentWillUnmount: function () {
+    if (this.tip) this.tip.hide()
     if (!this.props.manager) return
     this.props.manager.off(this.props.id, this.gotData)
   },
@@ -104,10 +106,21 @@ var Node = module.exports = React.createClass({
   hideTip: function () {
     this.tip.hide()
   },
+  componentWillReceiveProps: function (props) {
+    if (props.id !== this.props.id) {
+      if (!this.props.manager) return
+      this.props.manager.off(this.props.id, this.gotData)
+      this.props.manager.on(props.id, this.gotData)
+    }
+  },
   componentDidUpdate: function () {
     if (this.tip && this.props.tip) {
       this.tip.message(this.props.tip(this.state.data))
     }
+  },
+  onClick: function () {
+    if (this.tip) this.tip.hide()
+    this.props.onClick(this.props.id, this.state.data)
   },
   render: function () {
     var data = this.state.data
@@ -116,7 +129,7 @@ var Node = module.exports = React.createClass({
     if (this.props.attr && data[this.props.attr]) {
       data = data[this.props.attr]
     }
-    if (data.father) {
+    if (data.father && this.props.gens > this.props.gen + 1) {
       parents.push(Node({
         key: data.father,
         id: data.father,
@@ -124,14 +137,16 @@ var Node = module.exports = React.createClass({
         className: 'father',
         attr: this.props.attr,
         getClasses: this.props.getClasses,
+        onClick: this.props.onClick,
         tip: this.props.tip,
         manager: this.props.manager,
+        gens: this.props.gens,
         gen: this.props.gen + 1,
         pos: this.props.pos * 2,
         options: this.props.options
       }))
     }
-    if (data.mother) {
+    if (data.mother && this.props.gens > this.props.gen + 1) {
       parents.push(Node({
         key: data.mother,
         id: data.mother,
@@ -140,7 +155,9 @@ var Node = module.exports = React.createClass({
         attr: this.props.attr,
         manager: this.props.manager,
         getClasses: this.props.getClasses,
+        onClick: this.props.onClick,
         tip: this.props.tip,
+        gens: this.props.gens,
         gen: this.props.gen + 1,
         pos: this.props.pos * 2 + 1,
         options: this.props.options
@@ -158,12 +175,7 @@ var Node = module.exports = React.createClass({
         onMouseEnter: this.props.tip && this.showTip,
         onMouseMove: this.props.tip && this.showTip,
         onMouseLeave: this.props.tip && this.hideTip,
-        onMouseDown: function () {
-          console.log('down');
-        },
-        onMouseUp: function () {
-          console.log('up')
-        },
+        onClick: this.onClick,
         ref: 'path',
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
