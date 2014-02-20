@@ -1,6 +1,7 @@
 
 module.exports = {
   nodePath: nodePath,
+  arcCenter: arcCenter,
   pathToString: pathToString,
   radialLine: radialLine,
   childTop: childTop
@@ -44,7 +45,6 @@ function genWidth(width, gen, doubleWidth, extend) {
   return res;
 }
 
-/*
 // find the appropriate center for the arc
 function arcCenter(center, gen, pos, options) {
   var start = - options.sweep/2 - Math.PI/2 + options.offset
@@ -52,8 +52,8 @@ function arcCenter(center, gen, pos, options) {
     , innerRadius = genWidth(options.width, gen, options.doubleWidth)
     , outerRadius = genWidth(options.width, gen + 1, options.doubleWidth)
     , middleRadius = (outerRadius + innerRadius) / 2
-    , angle = start + (pos + .5) * segs
-    , point = pointAngle(center, start + (pos + .5) * segs, middleRadius);
+    , angle = start + (pos + 0.5) * segs
+    , point = pointAngle(center, start + (pos + 0.5) * segs, middleRadius);
   if (pos < Math.pow(2, gen) / 2) {
     angle += Math.PI;
     if (gen < 4) {
@@ -69,7 +69,6 @@ function arcCenter(center, gen, pos, options) {
     angle: angle
   };
 }
-*/
 
 // 
 // options:
@@ -101,6 +100,15 @@ function nodePath(center, gen, pos, options) {
     ['L', right[0].x, right[0].y],
     ['A', innerRadius, innerRadius, 0, 0, 0, left[0].x, left[0].y]
   ];
+}
+
+function textPath(center, gen, pos, options) {
+  var start = - options.sweep/2 - Math.PI/2 + options.offset
+    , segs = options.sweep / (Math.pow(2, gen))
+    , innerRadius = genWidth(options.width, gen, options.doubleWidth, options.start)
+    , outerRadius = genWidth(options.width, gen + 1, options.doubleWidth, -(1 - options.extend - options.start))
+    , left = pointsAngle(center, start + pos * segs, innerRadius, outerRadius)
+    , right = pointsAngle(center, start + (pos + 1) * segs, innerRadius, outerRadius);
 }
 
 function radialLine(center, gen1, gen2, num, options) {

@@ -70,6 +70,8 @@ var Node = module.exports = React.createClass({
       transform: undefined,
       getClasses: function () {},
       onClick: function () {},
+      mainTitle: function () {},
+      overTitle: function () {},
       tip: false,
       attr: null,
       gen: 0,
@@ -122,6 +124,35 @@ var Node = module.exports = React.createClass({
     if (this.tip) this.tip.hide()
     this.props.onClick(this.props.id, this.state.data)
   },
+  mainTitle: function () {
+    var x = 0
+      , y = this.props.options.width * 2
+      , title = this.props.mainTitle(x, y)
+    if ('string' !== typeof title) {
+      return title
+    }
+    return d.text({
+      className: 'fan__main-title',
+      style: {
+        fontSize: this.props.options.width/2
+      },
+      x: x,
+      y: y
+    }, title)
+  },
+  overTitle: function () {
+    var text = this.props.overTitle()
+      , c = utils.arcCenter({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
+    return d.text({
+      className: 'fan__over-title',
+      style: {
+        fontSize: this.props.options.width/3,
+      },
+      x: c.pos.x,
+      y: c.pos.y,
+      transform: 'rotate(' + (180 * c.angle / Math.PI) + ')'
+    }, text)
+  },
   render: function () {
     var data = this.state.data
       , classes = this.props.getClasses(data) || {}
@@ -138,6 +169,7 @@ var Node = module.exports = React.createClass({
         attr: this.props.attr,
         getClasses: this.props.getClasses,
         onClick: this.props.onClick,
+        overTitle: this.props.overTitle,
         tip: this.props.tip,
         manager: this.props.manager,
         gens: this.props.gens,
@@ -179,6 +211,8 @@ var Node = module.exports = React.createClass({
         ref: 'path',
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
+      this.overTitle(),
+      this.props.gen === 0 && this.mainTitle(),
       parents
     ])
   },

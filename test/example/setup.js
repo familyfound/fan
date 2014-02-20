@@ -42,14 +42,18 @@ function parents(man, id, gens) {
 }
 
 function go() {
-render('simple', d.svg({
-  width: 260,
-  height: 260
-}, Fan({
-  transform: 'translate(130,130)',
-  manager: man(4),
-  id: 0
-})))
+  render('simple', d.svg({
+    width: 260,
+    height: 260
+  }, Fan({
+    transform: 'translate(130,130)',
+    manager: man(4),
+    mainTitle: function () {
+      return 'Mensch'
+    },
+    gens: 5,
+    id: 0
+  })))
 }
 
 var slow = new Manager()
@@ -59,7 +63,14 @@ render('slow', d.svg({
   height: 260
 }, Fan({
   transform: 'translate(130,130)',
+  mainTitle: function () {
+    return 'Mensch'
+  },
+  overTitle: function () {
+    return 'Jared Lee Forsyth'
+  },
   manager: slow,
+  gens: 5,
   id: 0
 })))
 
