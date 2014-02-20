@@ -1,11 +1,19 @@
 
-path {
+path.fan__text-path {
+  stroke: black;
+}
+
+path.fan__over-title {
+  fill: black;
+}
+
+path.node {
   stroke: red;
   fill: #faa;
   stroke-width: 2;
   cursor: pointer;
 }
-path:hover {
+path.node:hover {
   stroke: green;
   fill: #afa;
 }

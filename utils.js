@@ -4,7 +4,8 @@ module.exports = {
   arcCenter: arcCenter,
   pathToString: pathToString,
   radialLine: radialLine,
-  childTop: childTop
+  childTop: childTop,
+  textPath: textPath
 }
 
 // take a list of path commmands and return a string
@@ -102,13 +103,29 @@ function nodePath(center, gen, pos, options) {
   ];
 }
 
+function midPoint(points) {
+  var p1 = points[0]
+    , p2 = points[1]
+  return {
+    x: (p2.x + p1.x)/2,
+    y: (p2.y + p1.y)/2
+  }
+}
+
 function textPath(center, gen, pos, options) {
   var start = - options.sweep/2 - Math.PI/2 + options.offset
     , segs = options.sweep / (Math.pow(2, gen))
     , innerRadius = genWidth(options.width, gen, options.doubleWidth, options.start)
     , outerRadius = genWidth(options.width, gen + 1, options.doubleWidth, -(1 - options.extend - options.start))
+    , middleRadius = (outerRadius + innerRadius) / 2
     , left = pointsAngle(center, start + pos * segs, innerRadius, outerRadius)
-    , right = pointsAngle(center, start + (pos + 1) * segs, innerRadius, outerRadius);
+    , right = pointsAngle(center, start + (pos + 1) * segs, innerRadius, outerRadius)
+    , mleft = midPoint(left)
+    , mright = midPoint(right)
+  return [
+    ['M', mleft.x, mleft.y],
+    ['A', middleRadius, middleRadius, 0, 0, 1, mright.x, mright.y],
+  ]
 }
 
 function radialLine(center, gen1, gen2, num, options) {

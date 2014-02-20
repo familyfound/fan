@@ -9,3 +9,7 @@
   fill: black;
 }
 
+.fan__over-title__text {
+  dominant-baseline: middle;
+}
+

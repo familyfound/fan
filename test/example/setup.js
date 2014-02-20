@@ -59,8 +59,8 @@ function go() {
 var slow = new Manager()
 slowParents(slow, 0, 4)
 render('slow', d.svg({
-  width: 260,
-  height: 260
+  width: 600,
+  height: 500
 }, Fan({
   transform: 'translate(130,130)',
   mainTitle: function () {
@@ -75,4 +75,13 @@ render('slow', d.svg({
 })))
 
 document.getElementById('go').addEventListener('click', go)
+
+var tp = React.createClass({
+  componentDidMount: function () {
+    this.refs.path.getDOMNode().setAttribute('xlink:href', this.props['xlink:href'])
+  },
+  render: function () {
+    return this.transferPropsTo(d.textpath({ref: 'path'}, this.props.children))
+  }
+})
 

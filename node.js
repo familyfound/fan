@@ -3,6 +3,15 @@ var d = React.DOM
   , utils = require('./utils')
   , Tip = require('tip')
 
+var TextPath = React.createClass({
+  componentDidMount: function () {
+    this.getDOMNode().innerHTML = '<textPath class="fan__over-title__text" xlink:href="' + this.props.pathHref + '" startOffset="' + this.props.startOffset + '">' + this.props.textContent + '</textPath>'
+  },
+  render: function () {
+    return this.transferPropsTo(d.text(null))
+  }
+})
+
 function tipPosition(x, y, ew, eh, pos) {
   var pad = 15;
   switch (pos) {
@@ -79,7 +88,7 @@ var Node = module.exports = React.createClass({
       options: {
         sweep: Math.PI*4/3,
         offset: 0,
-        width: 20,
+        width: 40,
         doubleWidth: false
       }
     }
@@ -140,18 +149,28 @@ var Node = module.exports = React.createClass({
       y: y
     }, title)
   },
-  overTitle: function () {
+  textPath: function () {
+    var path = utils.textPath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
+      , txt = utils.pathToString(path)
+    return d.path({
+      className: 'fan__text-path',
+      id: 'fan-' + this.props.gen + '-' + this.props.pos,
+      style: {display: 'none'},
+      d: txt
+    })
+  },
+  textText: function () {
     var text = this.props.overTitle()
-      , c = utils.arcCenter({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
-    return d.text({
+      , scale = [0, 1, 1.3, 2]
+    return TextPath({
       className: 'fan__over-title',
       style: {
-        fontSize: this.props.options.width/3,
+        fontSize: this.props.options.width/3/scale[this.props.gen],
       },
-      x: c.pos.x,
-      y: c.pos.y,
-      transform: 'rotate(' + (180 * c.angle / Math.PI) + ')'
-    }, text)
+      pathHref: '#fan-' + this.props.gen + '-' + this.props.pos,
+      startOffset: '50%',
+      textContent: text
+    })
   },
   render: function () {
     var data = this.state.data
@@ -187,6 +206,7 @@ var Node = module.exports = React.createClass({
         attr: this.props.attr,
         manager: this.props.manager,
         getClasses: this.props.getClasses,
+        overTitle: this.props.overTitle,
         onClick: this.props.onClick,
         tip: this.props.tip,
         gens: this.props.gens,
@@ -196,6 +216,7 @@ var Node = module.exports = React.createClass({
       }))
     }
     var cls = 'node ' + classes.path
+      , showText = this.props.gen > 0 && this.props.gen < 4
     return d.g({
         fill: 'none',
         stroke: 'none',
@@ -211,7 +232,8 @@ var Node = module.exports = React.createClass({
         ref: 'path',
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
-      this.overTitle(),
+      showText && this.textPath(),
+      showText && this.textText(),
       this.props.gen === 0 && this.mainTitle(),
       parents
     ])
