@@ -3,9 +3,27 @@ var d = React.DOM
   , utils = require('./utils')
   , Tip = require('tip')
 
+var setSvgContents = function (node, text) {
+  var d = document.createElement('div')
+  d.innerHTML = "<svg id='wrapper' xmlns='http://www.w3.org/2000/svg'>" + text + "</svg>"
+  ;[].slice.call(node.childNodes).forEach(function (n) {
+    node.removeChild(n)
+  })
+  ;[].slice.call(d.firstChild.childNodes).forEach(function (n) {
+    node.appendChild(n)
+  })
+}
+
 var TextPath = React.createClass({
   componentDidMount: function () {
-    this.getDOMNode().innerHTML = '<textPath class="fan__over-title__text" xlink:href="' + this.props.pathHref + '" startOffset="' + this.props.startOffset + '">' + this.props.textContent + '</textPath>'
+    var text = '<textPath class="fan__over-title__text" xlink:href="' + this.props.pathHref + '" startOffset="' + this.props.startOffset + '">' + this.props.textContent + '</textPath>'
+    var node = this.getDOMNode()
+    setSvgContents(node, text)
+  },
+  componentDidUpdate: function () {
+    var text = '<textPath class="fan__over-title__text" xlink:href="' + this.props.pathHref + '" startOffset="' + this.props.startOffset + '">' + this.props.textContent + '</textPath>'
+    var node = this.getDOMNode()
+    setSvgContents(node, text)
   },
   render: function () {
     return this.transferPropsTo(d.text(null))
