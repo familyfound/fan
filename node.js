@@ -154,7 +154,8 @@ var Node = module.exports = React.createClass({
   mainTitle: function () {
     var x = 0
       , y = this.props.options.width * 2
-      , title = this.props.mainTitle(x, y)
+      , title = this.props.mainTitle(this.state.data, x, y)
+    if (!title) return
     if ('string' !== typeof title) {
       return title
     }
@@ -177,11 +178,12 @@ var Node = module.exports = React.createClass({
       d: txt
     })
   },
-  textText: function () {
-    var text = this.props.overTitle()
-      , scale = [0, 1, 1.3, 2]
+  textText: function (shadow) {
+    var text = this.props.overTitle(this.state.data)
+      , scale = [0, 1.1, 1.3, 2]
+    if (!text) return
     return TextPath({
-      className: 'fan__over-title',
+      className: 'fan__over-title' + (shadow ? ' fan__over-title--shadow':''),
       style: {
         fontSize: this.props.options.width/3/scale[this.props.gen],
       },
@@ -251,6 +253,7 @@ var Node = module.exports = React.createClass({
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
       showText && this.textPath(),
+      showText && this.textText(true),
       showText && this.textText(),
       this.props.gen === 0 && this.mainTitle(),
       parents

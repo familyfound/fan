@@ -4,6 +4,13 @@
   fill: black;
 }
 
+.fan__over-title--shadow {
+  text-anchor: middle;
+  fill: white;
+  stroke: white;
+  stroke-width: 3;
+}
+
 .fan__over-title {
   text-anchor: middle;
   fill: black;
