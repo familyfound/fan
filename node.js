@@ -178,12 +178,20 @@ var Node = module.exports = React.createClass({
       d: txt
     })
   },
-  textText: function (shadow) {
+  textBack: function () {
+    var path = utils.textBack({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
+      , txt = utils.pathToString(path)
+    return d.path({
+      className: 'fan__text-back',
+      d: txt
+    })
+  },
+  textText: function () {
     var text = this.props.overTitle(this.state.data)
       , scale = [0, 1.1, 1.3, 2]
     if (!text) return
     return TextPath({
-      className: 'fan__over-title' + (shadow ? ' fan__over-title--shadow':''),
+      className: 'fan__over-title',
       style: {
         fontSize: this.props.options.width/3/scale[this.props.gen],
       },
@@ -253,7 +261,7 @@ var Node = module.exports = React.createClass({
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
       showText && this.textPath(),
-      showText && this.textText(true),
+      showText && this.textBack(),
       showText && this.textText(),
       this.props.gen === 0 && this.mainTitle(),
       parents

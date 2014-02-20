@@ -5,7 +5,8 @@ module.exports = {
   pathToString: pathToString,
   radialLine: radialLine,
   childTop: childTop,
-  textPath: textPath
+  textPath: textPath,
+  textBack: textBack
 }
 
 // take a list of path commmands and return a string
@@ -110,6 +111,59 @@ function midPoint(points) {
     x: (p2.x + p1.x)/2,
     y: (p2.y + p1.y)/2
   }
+}
+
+function shrink(poss, by) {
+  var xs = shrink1(poss[0].x, poss[1].x, by)
+    , ys = shrink1(poss[0].y, poss[1].y, by)
+  return [{
+    x: xs[0],
+    y: ys[0]
+  }, {
+    x: xs[1],
+    y: ys[1]
+  }]
+}
+
+function shrink1(a, b, by) {
+  var m = (1 - by) / 2
+    , diff = b - a
+  return [
+    b - diff * m,
+    a + diff * m
+  ]
+}
+
+function textBack(center, gen, pos, options) {
+  var start = - options.sweep/2 - Math.PI/2 + options.offset
+    , segs = options.sweep / (Math.pow(2, gen))
+    , innerRadius = genWidth(options.width, gen, options.doubleWidth, options.start)
+    , outerRadius = genWidth(options.width, gen + 1, options.doubleWidth, -(1 - options.extend - options.start))
+    , left = pointsAngle(center, start + pos * segs, innerRadius, outerRadius)
+    , right = pointsAngle(center, start + (pos + 1) * segs, innerRadius, outerRadius)
+    , sleft = shrink(left, 0.6)
+    , sright = shrink(right, 0.6)
+    , srad = shrink1(innerRadius, outerRadius, 0.6)
+  innerRadius = srad[0]
+  outerRadius = srad[1]
+  left = sleft
+  right = sright
+
+  if (options.centerCircle && gen === 0) { // circle me
+    return [
+      ['M', center.x, center.y],
+      ['m', -outerRadius, 0],
+      ['a', outerRadius, outerRadius, 0, 1, 0, outerRadius * 2, 0],
+      ['a', outerRadius, outerRadius, 0, 1, 0, - outerRadius * 2, 0]
+    ];
+  }
+  return [
+    ['M', left[0].x, left[0].y],
+    ['L', left[1].x, left[1].y],
+    ['A', outerRadius, outerRadius, 0, gen === 0 ? 1 : 0, 1, right[1].x, right[1].y],
+    ['L', right[0].x, right[0].y],
+    ['A', innerRadius, innerRadius, 0, 0, 0, left[0].x, left[0].y]
+  ];
 }
 
 function textPath(center, gen, pos, options) {

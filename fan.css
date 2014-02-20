@@ -4,6 +4,11 @@
   fill: black;
 }
 
+.fan__text-back {
+  fill: rgba(255, 255, 255, .7);
+  pointer-events: none;
+}
+
 .fan__over-title--shadow {
   text-anchor: middle;
   fill: white;
@@ -14,6 +19,7 @@
 .fan__over-title {
   text-anchor: middle;
   fill: black;
+  pointer-events: none;
 }
 
 .fan__over-title__text {
