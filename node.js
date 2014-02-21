@@ -128,6 +128,9 @@ var Node = module.exports = React.createClass({
       data: {},
     }
   },
+  shouldComponentUpdate: function (props, state) {
+    return this.props.id !== props.id || this.state.data !== state.data
+  },
   componentDidMount: function () {
     this.tip = new Tip('loading')
     if (!this.props.manager) return
