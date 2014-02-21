@@ -14,6 +14,18 @@ var setSvgContents = function (node, text) {
   })
 }
 
+var SVGText = React.createClass({
+  componentDidMount: function () {
+    this.getDOMNode().textContent = this.props.textContent
+  },
+  componentDidUpdate: function () {
+    this.getDOMNode().textContent = this.props.textContent
+  },
+  render: function () {
+    return this.transferPropsTo(d.text(null))
+  }
+})
+
 var TextPath = React.createClass({
   componentDidMount: function () {
     var text = '<textPath class="fan__over-title__text" xlink:href="' + this.props.pathHref + '" startOffset="' + this.props.startOffset + '">' + this.props.textContent + '</textPath>'
@@ -159,14 +171,15 @@ var Node = module.exports = React.createClass({
     if ('string' !== typeof title) {
       return title
     }
-    return d.text({
+    return SVGText({
       className: 'fan__main-title',
       style: {
         fontSize: this.props.options.width/2
       },
       x: x,
-      y: y
-    }, title)
+      y: y,
+      textContent: title
+    })
   },
   textPath: function () {
     var path = utils.textPath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
