@@ -14,6 +14,25 @@ var setSvgContents = function (node, text) {
   })
 }
 
+var SVGAnimatedCircle = React.createClass({
+  anim: function () {
+    var pos = this.props.cx + ' ' + this.props.cy
+    return  '<animateTransform attributeName="transform" type="rotate" from="0 ' + pos + '" to="360 ' + pos + '" dur="1s" repeatCount="indefinite"/>'
+  },
+  componentDidMount: function () {
+    setSvgContents(this.getDOMNode(), this.anim())
+  },
+  componentDidUpdate: function () {
+    setSvgContents(this.getDOMNode(), this.anim())
+  },
+  render: function () {
+    return this.transferPropsTo(d.circle({
+      cx: this.props.cx + this.props.rx,
+      cy: this.props.cy
+    }))
+  }
+})
+
 var SVGText = React.createClass({
   componentDidMount: function () {
     this.getDOMNode().textContent = this.props.textContent
@@ -129,7 +148,7 @@ var Node = module.exports = React.createClass({
     }
   },
   shouldComponentUpdate: function (props, state) {
-    return this.props.id !== props.id || this.state.data !== state.data
+    return this.props.id !== props.id || this.state.data !== state.data || props.options.width !== this.props.options.width
   },
   componentDidMount: function () {
     this.tip = new Tip('loading')
@@ -216,6 +235,31 @@ var Node = module.exports = React.createClass({
       textContent: text
     })
   },
+  loading: function () {
+    if (!this.state.data || !this.state.data.loading) return false
+    var pos = utils.arcCenter({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options)
+      , r = this.props.options.width / 8
+    return [
+      SVGAnimatedCircle({
+        cx: pos.pos.x,
+        cy: pos.pos.y,
+        rx: r * 2,
+        r: r,
+        style: {
+          fill: 'rgba(0, 0, 0, .6)'
+        }
+      }),
+      SVGAnimatedCircle({
+        cx: pos.pos.x,
+        cy: pos.pos.y,
+        rx: -r * 2,
+        r: r,
+        style: {
+          fill: 'rgba(0, 0, 0, .6)'
+        }
+      })
+    ]
+  },
   render: function () {
     var data = this.state.data
       , classes = this.props.getClasses(data) || {}
@@ -276,6 +320,7 @@ var Node = module.exports = React.createClass({
         ref: 'path',
         d: utils.pathToString(utils.nodePath({x: 0, y: 0}, this.props.gen, this.props.pos, this.props.options))
       }),
+      this.loading(),
       showText && this.textPath(),
       showText && this.textBack(),
       showText && this.textText(),
